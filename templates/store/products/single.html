@@ -17,7 +17,7 @@
                 <div class="border">
                     <div class="col border-bottom">
                         <div class="row p-3">
-                            <div class="col-6">Hardback</div>
+                            <div class="col-6">Price</div>
                             <div class="col-6 text-end"><span class="h4 fw-bold">£{{ product.price }}</span></div>
                         </div>
                     </div>
@@ -26,15 +26,18 @@
                             <div class="col-6">
                                 <label for="select">Qty</label>
                                 <select id="select">
-                                    <option value="">1</option>
-                                    <option value="">2</option>
-                                    <option value="">3</option>
-                                    <option value="">4</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
                                 </select>
 
                             </div>
-                            <div class="col-6 text-end"><button type="button" class="btn btn-secondary btn-sm">Add to
-                                    basket</button></div>
+                            <div class="col-6 text-end">
+                                <button id="update_cart" value="{{product.id}}" type="button" class="btn btn-secondary btn-sm">
+                                    Add to cart
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -43,4 +46,25 @@
     </main>
 
 </div>
+
+<script>
+    $(document).on('click', '#update_cart', function(e){
+        e.preventDefault();
+        $.ajax({
+            type : "POST",
+            url : "{% url 'cart:cart_add' %}",
+            data : {
+                productid : $('#update_cart').val(),
+                productqty : $("#select option:selected").text(),
+                csrfmiddlewaretoken : "{{ csrf_token }}",
+                action : 'post',
+            },
+            success : function(json){
+                document.getElementById("cart-qty").innerHTML = json.qty
+            },
+            error : function(xhr, errmsg, err){}
+        });
+    })
+</script>
+
 {% endblock %}
